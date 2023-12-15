@@ -1,0 +1,283 @@
+openapi: 3.0.0
+info:
+  title: Sample API
+  version: 1.0.0
+
+x-yc-apigateway:
+  cors:
+    origin: '*'
+    methods: '*'
+    allowedHeaders: '*'
+
+servers:
+- url: https://d5d4l8gbut1huec75f8q.apigw.yandexcloud.net
+paths:
+  /team:
+    get:
+      summary: Get team
+      description: Get team by team_id
+      parameters:
+        - name: team_id
+          in: query
+          description: ID of team
+          required: true
+          schema:
+            type: integer
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: d4e4vr5h9etk1tu9ke2g
+        content:
+          '*': 
+        http_code: 200
+        http_headers:
+          Content-Type: text/plain
+  /cards/{topic_id}:
+    get:
+      summary: Get cards for topic
+      description: Get cards for selected topic by topic_id
+      parameters:
+        - name: topic_id
+          in: path
+          description: ID of topic
+          required: true
+          schema:
+            type: integer
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: d4e4vr5h9etk1tu9ke2g
+        content:
+          '*': 
+        http_code: 200
+        http_headers:
+          Content-Type: text/plain
+  /topic:
+    get:
+      summary: Get full list of topics
+      description: Get full list of topics to play
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: d4e4vr5h9etk1tu9ke2g
+        content:
+          '*': 
+        http_code: 200
+        http_headers:
+          Content-Type: text/plain
+  /game/configure:
+    post:
+      summary: Configure new game
+      description: Configure new game without start timer
+      requestBody:
+        description: Game object
+        required: true
+        content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: d4e4vr5h9etk1tu9ke2g
+        content:
+          '*': 
+        http_code: 200
+        http_headers:
+          Content-Type: application/json
+          Access-Control-Allow-Origin: "*"
+          Access-Control-Allow-Methods: "*"
+        timeouts:
+            connect: 10
+            read: 10
+  /game/start:
+    patch:
+      summary: Start new game
+      description: Start new game with timer
+      parameters:
+        - name: game_id
+          in: query
+          description: ID of game
+          required: true
+      requestBody:
+        description: Team id
+        required: true
+        content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  team_id:
+                    type: integer
+                    description: ID of team
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: d4e4vr5h9etk1tu9ke2g
+        content:
+          '*': 
+        http_code: 200
+        http_headers:
+          Content-Type: application/json
+          Access-Control-Allow-Origin: "*"
+          Access-Control-Allow-Methods: "*"
+        timeouts:
+            connect: 10
+            read: 10
+  /game/round:
+    patch:
+      summary: Notify about next round
+      description: Notify about next round of game
+      parameters:
+        - name: game_id
+          in: query
+          description: ID of game
+          required: true
+      requestBody:
+        description: Game info object
+        required: true
+        content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameInfo'
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: d4e4vr5h9etk1tu9ke2g
+        content:
+          '*': 
+        http_code: 200
+        http_headers:
+          Content-Type: text/plain
+        timeouts:
+            connect: 10
+            read: 10
+  /game/answer:
+    patch:
+      summary: Notify about answered question
+      description: Notify about answered question
+      parameters:
+        - name: game_id
+          in: query
+          description: ID of game
+          required: true
+      requestBody:
+        description: Question answer object
+        required: true
+        content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Answer'
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: d4e4vr5h9etk1tu9ke2g
+        content:
+          '*': 
+        http_code: 200
+        http_headers:
+          Content-Type: text/plain
+        timeouts:
+            connect: 10
+            read: 10
+  /game/next/round:
+    post:
+      summary: Get question card for next team
+      parameters:
+        - name: game_id
+          in: query
+          description: ID of game
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Round info object
+        required: true
+        content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoundInfo'
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: d4e4vr5h9etk1tu9ke2g
+        content:
+          '*': 
+        http_code: 200
+        http_headers:
+          Content-Type: text/plain
+          timeouts:
+            connect: 10
+            read: 10
+  /game:
+    get:
+      summary: Get game configuration
+      description: Get game configuration for repeat game
+      parameters:
+        - name: game_id
+          in: query
+          description: ID of game
+          required: true
+          schema:
+            type: integer
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: d4e4vr5h9etk1tu9ke2g
+        content:
+          '*': 
+        http_code: 200
+        http_headers:
+          Content-Type: text/plain
+
+components:
+  schemas:
+    Team:
+      type: object
+      properties:
+        team_name:
+          type: string
+      example:
+        team_name: "Bandits"
+    Game:
+      type: object
+      properties:
+        points_to_win:
+          type: integer
+          description: Can be multiple of 25
+        round_time:
+          type: integer
+          description: Can be multiple of 30
+        topic_id:
+          type: integer
+          description: Topic id of game
+        teams_count:
+          type: integer
+          description: Number of playing teams (2-7)
+      example:
+        points_to_win: 100
+        round_time: 60
+        topic_id: 55
+        teams_count: 4
+    GameInfo:
+      type: object
+      properties:
+        points:
+          type: integer
+          description: Scored points in round
+      example:
+        points: 55
+    RoundInfo:
+      type: object
+      properties:
+        team_id:
+          type: integer
+          description: ID of team
+        round_id:
+          type: integer
+          description: ID of round
+      example:
+        points: 55
+    Answer:
+      type: object
+      properties:
+        team_id:
+          type: integer
+          description: ID of team
+        is_answered: 
+          type: bool
+          description: is question answered
+      example:
+        points: 55
+        is_answered: true    
