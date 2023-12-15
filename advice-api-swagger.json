@@ -1,0 +1,32 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "title" : "Advice API",
+    "version" : "master"
+  },
+  "paths" : {
+    "/advice" : {
+      "get" : {
+        "summary" : "GET-advice",
+        "operationId" : "GET-advice",
+        "responses" : {
+          "default" : {
+            "description" : "default response"
+          }
+        },
+        "x-yc-apigateway-integration" : {
+          "type" : "http",
+          "url" : "https://api.adviceslip.com/advice"
+        },
+        "x-speca-id" : "GET-advice"
+      }
+    }
+  },
+  "x-yc-apigateway" : {
+    "cors" : {
+      "origin" : "*",
+      "methods" : "*",
+      "allowedHeaders" : "*"
+    }
+  }
+}
