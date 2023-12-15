@@ -1,4 +1,5 @@
 Проект - игра "Алиас"
+
 Описание файлов:
 - alias_api_swagger.json -- код api в формате swagger (документация)
 - alias_api.yaml -- код open api из yandex api gateway
